@@ -1,5 +1,8 @@
-#!/usr/bin/env bash
-# Bash script to configure Nginx redirection
+#!/bin/bash
+
+# Install Nginx
+apt-get update
+apt-get install -y nginx
 
 # Backup the default Nginx configuration file
 cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
@@ -8,7 +11,7 @@ cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
 sed -i '/^.*location \/ {$/ {
 N; s/location \/ {\n[[:space:]]*# First attempt to serve request as file, then/\
 &\n    location \/redirect_me {\
-        return 301 https:\/\/www.youtube.com\/watch?v=QH2-TGUlwu4;\
+        return 301 https:\/\/www.example.com;\
     }/}' /etc/nginx/sites-available/default
 
 # Restart Nginx to apply changes
