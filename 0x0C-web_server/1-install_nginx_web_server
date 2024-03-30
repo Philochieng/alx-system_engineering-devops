@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Bash script to install and configure Nginx web server
+
+# Update package lists and install nginx with -y flag
+apt-get update
+apt-get install -y nginx
+
+# Replace default Nginx configuration with one that listens on port 80
+echo "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+
+    location = / {
+        return 200 'Hello World!';
+        add_header Content-Type text/plain;
+    }
+}" > /etc/nginx/sites-available/default
+
+# Restart Nginx to apply changes
+service nginx restart
+
