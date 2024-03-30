@@ -1,12 +1,43 @@
-#!/usr/bin/env bash
-# Bash script to configure Nginx custom 404 page
+#!/bin/bash
 
-# Backup the default Nginx configuration file
-cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+# Install Nginx
+apt-get update
+apt-get install -y nginx
 
-# Use sed to add a custom error page for 404 errors
-sed -i '/^.*server_name localhost;$/a\\n    error_page 404 /404.html;\n    location = /404.html {\n        root /usr/share/nginx/html;\n        internal;\n        echo "Ceci n'\''est pas une page";\n    }' /etc/nginx/sites-available/default
+# Create a custom 404 error page file
+cat << EOF > /usr/share/nginx/html/404.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>404 Not Found</title>
+</head>
+<body>
+    <h1>404 Not Found</h1>
+    <p>Ceci n'est pas une page</p>
+</body>
+</html>
+EOF
 
-# Restart Nginx to apply changes
+# Configure Nginx to use the custom 404 error page
+cat << EOF > /etc/nginx/sites-available/default
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /usr/share/nginx/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOF
+
+# Enable the default site
+ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+# Restart Nginx
 service nginx restart
 
