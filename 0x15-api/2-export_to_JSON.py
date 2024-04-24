@@ -1,16 +1,19 @@
 #!/usr/bin/python3
 
 """
-Script to gather data from a REST API about an employee's TODO list progress.
+Script to gather data from a REST API about an employee's TODO list progress
+and export it to a JSON file.
 """
 
+import json
 import requests
 import sys
 
 
 def get_employee_todo_progress(employee_id):
     """
-    Retrieve and display information about the TODO list progress of a given employee.
+    Retrieve information about the TODO list progress of a given employee
+    and export it to a JSON file.
 
     Args:
         employee_id (int): The ID of the employee.
@@ -35,19 +38,27 @@ def get_employee_todo_progress(employee_id):
         return
 
     user_data = user_response.json()
-    employee_name = user_data.get("name")
-    total_tasks = len(todos)
-    completed_tasks = sum(todo.get("completed", False) for todo in todos)
+    employee_name = user_data.get("username")
 
-    print(f"Employee {employee_name} is done with tasks({completed_tasks}/{total_tasks}):")
-    for todo in todos:
-        if todo.get("completed"):
-            print(f"\t{todo.get('title')}")
+    tasks_data = {
+        str(employee_id): [
+            {
+                "task": todo.get("title"),
+                "completed": todo.get("completed"),
+                "username": employee_name
+            }
+            for todo in todos
+        ]
+    }
+
+    filename = f"{employee_id}.json"
+    with open(filename, "w") as jsonfile:
+        json.dump(tasks_data, jsonfile)
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python3 0-gather_data_from_an_API.py <employee_id>")
+        print("Usage: python3 2-export_to_JSON.py <employee_id>")
         sys.exit(1)
 
     employee_id = int(sys.argv[1])
