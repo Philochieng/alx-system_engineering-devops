@@ -17,15 +17,21 @@ def get_employee_todo_progress(employee_id):
     Returns:
         None
     """
-    url = f"https://jsonplaceholder.typicode.com/users/{employee_id}/todos"
+    url = (
+        f"https://jsonplaceholder.typicode.com/users/{employee_id}/todos"
+    )
     response = requests.get(url)
+
     if response.status_code != 200:
         print("Failed to fetch data from the API")
         return
 
     todos = response.json()
-    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+    user_url = (
+        f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+    )
     user_response = requests.get(user_url)
+
     if user_response.status_code != 200:
         print("Failed to fetch user data from the API")
         return
@@ -35,7 +41,10 @@ def get_employee_todo_progress(employee_id):
     total_tasks = len(todos)
     completed_tasks = sum(todo.get("completed", False) for todo in todos)
 
-    print(f"Employee {employee_name} is done with tasks({completed_tasks}/{total_tasks}):")
+    print(f"Employee Name: {employee_name}")
+    print(f"To Do Count: {total_tasks}")
+    print(f"Employee {employee_name} is done with tasks("
+          f"{completed_tasks}/{total_tasks}):")
     for todo in todos:
         if todo.get("completed"):
             print(f"\t{todo.get('title')}")
